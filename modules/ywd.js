@@ -53,13 +53,11 @@ const processDeviation = (usl, lsl, valueArray, timestampArray, modelArray) => {
 		let value = valueArray[i]
 
 		if ((value < +lwl && value > +lcl) || (value > +uwl && value < +ucl)) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "warning" })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "warning", notification: { mail: true, telegram: true } })
 		} else if ((value < lcl && value > lsl) || (value > ucl && value < usl)) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "minor deviation" })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "minor deviation", notification: { mail: true, telegram: false } })
 		} else if (value < lsl || value > usl) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "major deviation" })
-			// } else if (i > 0 && i < valueArray.length - 1 && (valueArray[i - 1] < value && valueArray[i + 1] < value)) {
-			// deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "sudden peak" })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "major deviation", notification: { mail: false, telegram: false } })
 		}
 	}
 
