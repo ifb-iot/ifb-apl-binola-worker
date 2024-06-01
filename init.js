@@ -8,7 +8,7 @@ exports.initialize = async () => {
 			try {
 				const currentDate = new Date();
 				currentDate.setHours(currentDate.getHours() - 7)
-				// currentDate.setDate(currentDate.getDate() - 2) // Subtract specific date to access backdated data
+				// currentDate.setDate(currentDate.getDate() - 1) // Subtract specific date to access backdated data
 				currentDate.setHours(7, 0, 0, 0); // Set Shift start time as 7 am
 
 				await client.connect();

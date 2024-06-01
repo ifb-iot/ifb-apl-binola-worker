@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config()
 const ss = require('simple-statistics');
 
-const criticalParameters = (usl, lsl, valueArray) => {
+const criticalParameters = (usl, lsl, valueArray, date) => {
 	const mean = ss.mean(valueArray);
 	const min = ss.min(valueArray);
 	const max = ss.max(valueArray);
@@ -17,6 +17,7 @@ const criticalParameters = (usl, lsl, valueArray) => {
 	let warningLimit = ((usl - lsl) / 2) * 0.6
 
 	const data = {
+		"date": date,
 		"count": valueArray.length,
 		"lsl": parseFloat(lsl).toFixed(2),
 		"usl": parseFloat(usl).toFixed(2),
@@ -118,7 +119,7 @@ exports.process = async (configuration) => {
 							"status": resultArray,
 							"data": parametersArray[key]
 						},
-						"calculations": parametersArray[key].length > 0 ? criticalParameters(element.usl, element.lsl, parametersArray[key]) : {},
+						"calculations": parametersArray[key].length > 0 ? criticalParameters(element.usl, element.lsl, parametersArray[key], configuration.timestamp) : {},
 						"deviations": parametersArray[key].length > 0 ? processDeviation(element.usl, element.lsl, parametersArray[key], timestampArray, batchCodeArray) : {}
 					}
 				}
