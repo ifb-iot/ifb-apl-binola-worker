@@ -120,7 +120,7 @@ exports.process = async (configuration) => {
 							"data": parametersArray[key]
 						},
 						"calculations": parametersArray[key].length > 0 ? criticalParameters(element.usl, element.lsl, parametersArray[key], configuration.timestamp) : {},
-						"deviations": parametersArray[key].length > 0 ? processDeviation(element.usl, element.lsl, parametersArray[key], timestampArray, batchCodeArray) : {}
+						"deviations": parametersArray[key].length > 0 ? processDeviation(element.usl, element.lsl, parametersArray[key], timestampArray, batchCodeArray) : []
 					}
 				}
 			}
