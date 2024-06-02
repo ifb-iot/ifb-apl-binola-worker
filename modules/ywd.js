@@ -54,11 +54,11 @@ const processDeviation = (usl, lsl, valueArray, timestampArray, modelArray) => {
 		let value = valueArray[i]
 
 		if ((value < +lwl && value > +lcl) || (value > +uwl && value < +ucl)) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "warning", notification: { mail: true, telegram: true } })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "warning" })
 		} else if ((value < lcl && value > lsl) || (value > ucl && value < usl)) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "minor deviation", notification: { mail: true, telegram: false } })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "minor deviation" })
 		} else if (value < lsl || value > usl) {
-			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "major deviation", notification: { mail: false, telegram: false } })
+			deviations.push({ timestamp: timestampArray[i], model: modelArray[i], value: value, reason: "major deviation" })
 		}
 	}
 
@@ -84,6 +84,7 @@ exports.process = async (configuration) => {
 		}
 
 		const update = {};
+		let issueTrackerArray = []
 
 		const filteredData = configuration.config.filter(obj => obj.machine.model === "EOL TESTING");
 		for (let x = 0; x < filteredData.length; x++) {
@@ -110,6 +111,38 @@ exports.process = async (configuration) => {
 			for (const key in configuration["process-config"][0].specifications[id]) {
 				if (Object.hasOwnProperty.call(configuration["process-config"][0].specifications[id], key)) {
 					const element = configuration["process-config"][0].specifications[id][key];
+					const deviationList = parametersArray[key].length > 0 ? processDeviation(element.usl, element.lsl, parametersArray[key], timestampArray, batchCodeArray) : []
+					const filteredDeviationList = deviationList.filter(item => item.reason !== "warning");
+
+					const transformedArray = filteredDeviationList.map(content => ({
+						"mapping": "issue-tracker",
+						"type": "control-charts",
+						"location": filteredData[x].machine.location,
+						"batch-code": content.model,
+						"parameter": key,
+						"timestamp": new Date(content.timestamp),
+						"updated": new Date(),
+						"analysis": {
+							"issue-name": content.reason,
+							"root-cause": "",
+							"corective-action": "",
+							"person-responsible": [{
+								name: "",
+								email: ""
+							}, {
+								name: "",
+								email: ""
+							}],
+							"target-date": "",
+							"status": "PENDING",
+							"remarks": ""
+						},
+						"notification": {
+							"telegram": false,
+							"email": false
+						}
+					}));
+
 					parameters[key] = {
 						"raw-data": {
 							"timestamp": timestampArray,
@@ -120,8 +153,9 @@ exports.process = async (configuration) => {
 							"data": parametersArray[key]
 						},
 						"calculations": parametersArray[key].length > 0 ? criticalParameters(element.usl, element.lsl, parametersArray[key], configuration.timestamp) : {},
-						"deviations": parametersArray[key].length > 0 ? processDeviation(element.usl, element.lsl, parametersArray[key], timestampArray, batchCodeArray) : []
+						"deviations": deviationList
 					}
+					issueTrackerArray = issueTrackerArray.concat(transformedArray)
 				}
 			}
 
@@ -130,7 +164,17 @@ exports.process = async (configuration) => {
 			update[`${id}.last-updated`] = new Date();
 		}
 
+		const bulkOperations = issueTrackerArray.map(issue => ({
+			updateOne: {
+				filter: { 'batch-code': issue['batch-code'], parameter: issue.parameter },
+				update: { $setOnInsert: issue },
+				upsert: true,
+			}
+		}));
+
 		await database.collection('live').updateOne({ date: configuration.timestamp }, { $set: update }, { upsert: true });
+		bulkOperations.length > 0 ? await database.collection('non-live').bulkWrite(bulkOperations) : null
+
 		console.log("YWD | EOL TESTING | UPDATED | " + new Date())
 
 	} finally {
