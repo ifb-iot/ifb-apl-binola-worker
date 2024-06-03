@@ -90,7 +90,7 @@ exports.process = async (configuration) => {
 		for (let x = 0; x < filteredData.length; x++) {
 			let id = filteredData[x]._id.toString()
 			const filteredIdSpecificRawData = configuration["raw-data"].filter(obj => obj.id === id);
-			for (let y = 0; y < filteredIdSpecificRawData.length; y++) {
+			for (let y = 1; y < filteredIdSpecificRawData.length; y++) {
 				const element = filteredIdSpecificRawData[y];
 				for (let z = 0; z < element.data.length; z++) {
 					const values = element.data[z];
