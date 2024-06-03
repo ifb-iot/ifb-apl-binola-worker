@@ -60,7 +60,6 @@ const broadcastNotifications = async (issueList, telegramUsers) => {
 			if (user.notification.telegram.status) {
 				let issueNotification = issue.analysis["issue-name"].toUpperCase() + " in " + issue.parameter.split("-").join(" ").toUpperCase() + " has been observed on the " + issue.location + " for part having batch code of " + issue["batch-code"];
 				let url = 'https://api.telegram.org/bot7276085424:AAFchGWWiP7M28bGjfTn5i9IS9giZUCmgOA/sendMessage?chat_id=' + user.notification.telegram.id + '&text=' + issueNotification;
-
 				await fetch(url);
 
 				updateFields.push({
@@ -74,7 +73,6 @@ const broadcastNotifications = async (issueList, telegramUsers) => {
 		});
 		return Promise.all(issuePromises);
 	}));
-
 	return updateFields;
 };
 
@@ -100,6 +98,5 @@ exports.init = async () => {
 }
 
 bot.launch()
-
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
