@@ -1,14 +1,14 @@
 const schedule = require('node-schedule');
 const init = require('./init');
 
-const ywd = require('./modules/ywd')
+const eolTesting = require('./modules/eolTesting')
 
 const telegramNotifications = require('./modules/telegramNotifications')
 
 const process1 = async () => {
 	try {
 		const configuration = await init.initialize()
-		ywd.process(configuration)
+		eolTesting.process(configuration)
 	} catch (e) {
 		console.log(e)
 	}

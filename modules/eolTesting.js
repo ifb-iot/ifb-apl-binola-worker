@@ -71,26 +71,27 @@ exports.process = async (configuration) => {
 		await client.connect();
 		const database = client.db(process.env.DB_NAME_2);
 
-		const timestampArray = []
-		const batchCodeArray = []
-		const operatorArray = []
-		const shiftArray = []
-		const resultArray = []
-
-		const parametersArray = {
-			"closing-speed": [],
-			"opening-speed": [],
-			"motor-current": []
-		}
-
 		const update = {};
 		let issueTrackerArray = []
 
 		const filteredData = configuration.config.filter(obj => obj.machine.model === "EOL TESTING");
 		for (let x = 0; x < filteredData.length; x++) {
 			let id = filteredData[x]._id.toString()
+
+			const timestampArray = []
+			const batchCodeArray = []
+			const operatorArray = []
+			const shiftArray = []
+			const resultArray = []
+
+			const parametersArray = {
+				"closing-speed": [],
+				"opening-speed": [],
+				"motor-current": []
+			}
+
 			const filteredIdSpecificRawData = configuration["raw-data"].filter(obj => obj.id === id);
-			for (let y = 2; y < filteredIdSpecificRawData.length; y++) {
+			for (let y = 0; y < filteredIdSpecificRawData.length; y++) {
 				const element = filteredIdSpecificRawData[y];
 				for (let z = 0; z < element.data.length; z++) {
 					const values = element.data[z];
@@ -175,7 +176,7 @@ exports.process = async (configuration) => {
 		await database.collection('live').updateOne({ date: configuration.timestamp }, { $set: update }, { upsert: true });
 		bulkOperations.length > 0 ? await database.collection('non-live').bulkWrite(bulkOperations) : null
 
-		console.log("YWD | EOL TESTING | UPDATED | " + new Date())
+		console.log("EOL TESTING | UPDATED | " + new Date(configuration.timestamp))
 
 	} finally {
 		await client.close();
