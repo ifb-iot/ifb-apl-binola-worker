@@ -84,7 +84,7 @@ exports.init = async () => {
 	const telegramUsers = await fetchTelegramUsers();
 	const issueList = await fetchIssueList()
 
-	const bulkOperations = await broadcastNotifications(issueList, telegramUsers);
+	const bulkOperations = await broadcastNotifications(issueList.length <= 25 ? issueList : issueList.slice(0, 25), telegramUsers);
 	if (bulkOperations.length > 0) {
 		await database.collection('non-live').bulkWrite(bulkOperations)
 		console.log("TELEGRAM NOTIFICATIONS | SENT | " + new Date())
