@@ -18,6 +18,13 @@ const process1 = async () => {
 const process2 = async () => {
 	try {
 		telegramNotifications.init()
+	} catch (e) {
+		console.log(e)
+	}
+}
+
+const process3 = async () => {
+	try {
 		mailNotifications.init()
 	} catch (e) {
 		console.log(e)
@@ -36,3 +43,8 @@ schedule.scheduleJob("*/1 * * * *", function () {
 	console.log('TELEGRAM NOTIFICATIONS | ' + new Date())
 	process2()
 })
+
+schedule.scheduleJob('0 * * * *', function () {
+	console.log('MAIL NOTIFICATIONS | ' + new Date());
+	process3();
+});
