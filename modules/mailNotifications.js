@@ -61,8 +61,6 @@ async function fetchIssueList() {
 
 const generateMailBody = (issueList) => {
 
-	let url = "http://localhost:3001/quality/control-charts/deviation"
-
 	const html = `<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 		<style>
 		p { font-size: 16px }
@@ -206,16 +204,20 @@ const generateMailBody = (issueList) => {
 }
 
 const broadcastNotifications = async (issueList, mailUsers) => {
-	const htmlBody = generateMailBody(issueList)
-	mailer.autoMailer(mailUsers.join(), "", issueList[0].analysis["issue-name"].toUpperCase() + " OBSERVED", htmlBody)
-	const updateFields = issueList.map(issue => ({
-		updateOne: {
-			filter: { _id: new ObjectId(issue._id) },
-			update: { $set: { 'notification.email': true } },
-			upsert: true,
-		}
-	}));
-	return updateFields;
+	if (issueList.length > 0) {
+		const htmlBody = generateMailBody(issueList)
+		mailer.autoMailer(mailUsers.join(), "", issueList[0].analysis["issue-name"].toUpperCase() + " OBSERVED", htmlBody)
+		const updateFields = issueList.map(issue => ({
+			updateOne: {
+				filter: { _id: new ObjectId(issue._id) },
+				update: { $set: { 'notification.email': true } },
+				upsert: true,
+			}
+		}));
+		return updateFields;
+	} else {
+		return [];
+	}
 };
 
 exports.init = async () => {
