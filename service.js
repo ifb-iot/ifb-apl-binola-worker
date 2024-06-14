@@ -4,6 +4,7 @@ const init = require('./init');
 const eolTesting = require('./modules/eolTesting')
 
 const telegramNotifications = require('./modules/telegramNotifications')
+const mailNotifications = require('./modules/mailNotifications')
 
 const process1 = async () => {
 	try {
@@ -17,6 +18,7 @@ const process1 = async () => {
 const process2 = async () => {
 	try {
 		telegramNotifications.init()
+		mailNotifications.init()
 	} catch (e) {
 		console.log(e)
 	}

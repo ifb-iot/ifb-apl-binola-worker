@@ -125,6 +125,9 @@ exports.process = async (configuration) => {
 						"updated": new Date(),
 						"analysis": {
 							"issue-name": content.reason,
+							"value": content.value,
+							"lsl": element.lsl,
+							"usl": element.usl,
 							"root-cause": "",
 							"corective-action": "",
 							"person-responsible": [{
