@@ -232,8 +232,8 @@ exports.init = async () => {
 	const minorDeviation = issueList.filter(obj => obj.analysis["issue-name"] === "minor deviation")
 	const majorDeviation = issueList.filter(obj => obj.analysis["issue-name"] === "major deviation")
 
-	const updateMinorDeviations = await broadcastNotifications(minorDeviation.length <= 4 ? minorDeviation : minorDeviation.slice(0, 4), mailIdArray);
-	const updateMajorDeviations = await broadcastNotifications(majorDeviation.length <= 4 ? majorDeviation : majorDeviation.slice(0, 4), mailIdArray);
+	const updateMinorDeviations = await broadcastNotifications(minorDeviation.length <= 50 ? minorDeviation : minorDeviation.slice(0, 50), mailIdArray);
+	const updateMajorDeviations = await broadcastNotifications(majorDeviation.length <= 50 ? majorDeviation : majorDeviation.slice(0, 50), mailIdArray);
 	updateMinorDeviations.length > 0 ? await database.collection('non-live').bulkWrite(updateMinorDeviations) : null
 	updateMajorDeviations.length > 0 ? await database.collection('non-live').bulkWrite(updateMajorDeviations) : null
 	console.log("EMAIL NOTIFICATIONS | " + new Date())

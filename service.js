@@ -46,5 +46,5 @@ schedule.scheduleJob("*/1 * * * *", function () {
 
 schedule.scheduleJob('0 * * * *', function () {
 	console.log('MAIL NOTIFICATIONS | ' + new Date());
-	process3();
+	process3()
 });
