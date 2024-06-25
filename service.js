@@ -34,17 +34,17 @@ const process3 = async () => {
 /**
  * SCHEDULE JOBS
  */
-schedule.scheduleJob("*/1 * * * *", function () {
+schedule.scheduleJob("*/2 * * * *", function () {
 	console.log('PROCESS DATA | ' + new Date())
 	process1()
 })
 
-schedule.scheduleJob("*/1 * * * *", function () {
+schedule.scheduleJob("*/3 * * * *", function () {
 	console.log('TELEGRAM NOTIFICATIONS | ' + new Date())
 	process2()
 })
 
-schedule.scheduleJob('0 * * * *', function () {
+schedule.scheduleJob("*/59 * * * *", function () {
 	console.log('MAIL NOTIFICATIONS | ' + new Date());
 	process3()
 });
