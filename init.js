@@ -1,14 +1,13 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config()
 
-exports.initialize = async () => {
+exports.initialize = async (index) => {
 	return new Promise((resolve, reject) => {
 		const client = new MongoClient(process.env.DB_URL);
 		const connectToMongoDB = async () => {
 			try {
 				const currentDate = new Date();
-				currentDate.setHours(currentDate.getHours() - 7)
-				// currentDate.setDate(currentDate.getDate() - 1) // Subtract specific date to access backdated data
+				index === 0 ? currentDate.setHours(currentDate.getHours() - 7) : currentDate.setDate(currentDate.getDate() - index) // Subtract specific date to access backdated data
 				currentDate.setHours(7, 0, 0, 0); // Set Shift start time as 7 am
 
 				await client.connect();

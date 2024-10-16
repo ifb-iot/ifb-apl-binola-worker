@@ -8,8 +8,10 @@ const mailNotifications = require('./modules/mailNotifications')
 
 const process1 = async () => {
 	try {
-		const configuration = await init.initialize()
-		eolTesting.process(configuration)
+		for (let x = 0; x < 30; x++) {
+			const configuration = await init.initialize(x)
+			eolTesting.process(configuration)
+		}
 	} catch (e) {
 		console.log(e)
 	}
@@ -34,7 +36,7 @@ const process3 = async () => {
 /**
  * SCHEDULE JOBS
  */
-schedule.scheduleJob("*/2 * * * *", function () {
+schedule.scheduleJob("*/5 * * * *", function () {
 	console.log('PROCESS DATA | ' + new Date())
 	process1()
 })
